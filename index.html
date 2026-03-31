@@ -5,133 +5,117 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>학급 맞춤형 원소 매칭기</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- 화면 캡처를 위한 라이브러리 추가 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Pretendard', sans-serif; }
-        .element-grid-item {
-            transition: all 0.2s ease;
-        }
-        .element-grid-item:hover {
-            transform: scale(1.02);
-        }
+        body { font-family: 'Pretendard', sans-serif; -webkit-font-smoothing: antialiased; }
+        .element-grid-item { transition: all 0.2s ease; }
         @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
+            from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .animate-slide-up {
-            animation: slideUp 0.4s ease-out forwards;
-        }
-        .no-print {
-            display: block;
-        }
-        /* 캡처 시 배경색 유지를 위한 설정 */
+        .animate-slide-up { animation: slideUp 0.4s ease-out forwards; }
+        
         #captureArea {
-            background-color: #f8fafc; /* slate-50 */
-            padding: 2.5rem;
+            background-color: #f8fafc;
+            padding: 1.5rem;
             border-radius: 1.5rem;
         }
+
+        /* 모바일 5열 대응을 위한 미세 조정 */
+        @media (max-width: 640px) {
+            .student-label { font-size: 0.65rem !important; padding: 0.1rem 0.25rem !important; }
+            .symbol-text { font-size: 1.25rem !important; }
+            .name-text { font-size: 0.75rem !important; }
+            #captureArea { padding: 1rem; }
+        }
+
         @media print {
-            .no-print { display: none; }
+            .no-print { display: none !important; }
             body { background: white; }
             #resultGrid {
                 display: grid !important;
-                grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
-            }
-            #captureArea {
-                padding: 0;
-                background: white;
+                grid-template-columns: repeat(5, 1fr) !important;
+                gap: 8px !important;
             }
         }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen text-slate-800 pb-10">
+<body class="bg-slate-50 min-h-screen text-slate-800 flex flex-col">
 
-    <div class="max-w-6xl mx-auto px-4 py-10">
+    <div class="flex-grow max-w-6xl mx-auto px-4 py-8 w-full">
         <!-- Header -->
-        <header class="text-center mb-10 no-print">
-            <h1 class="text-4xl font-extrabold text-indigo-600 mb-2">🏫 학급 전체 원소 매칭기</h1>
-            <p class="text-slate-500 font-medium">우리 반 번호에 딱 맞게 원소 기호를 무작위로 배정하고 이미지로 저장하세요.</p>
+        <header class="text-center mb-8 no-print">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-indigo-600 mb-2">🏫 학급 원소 매칭기</h1>
+            <p class="text-slate-500 font-medium text-sm md:text-base">조건을 입력하고 학급 전체 결과를 생성하세요.</p>
         </header>
 
-        <!-- Configuration Section -->
+        <!-- Config Section -->
         <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 mb-8 no-print">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-2">학년 / 반</label>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+                <div class="col-span-2 md:col-span-1">
+                    <label class="block text-xs font-bold text-slate-500 mb-1 ml-1 uppercase">학년 / 반</label>
                     <div class="flex gap-2">
-                        <input type="number" id="grade" placeholder="학년" 
-                               class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none">
-                        <input type="number" id="classGroup" placeholder="반" 
-                               class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none">
+                        <input type="number" id="grade" placeholder="학년" class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none text-sm">
+                        <input type="number" id="classGroup" placeholder="반" class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none text-sm">
                     </div>
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-2">시작 번호</label>
-                    <input type="number" id="startNum" value="1" 
-                           class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none">
+                    <label class="block text-xs font-bold text-slate-500 mb-1 ml-1 uppercase">시작 번호</label>
+                    <input type="number" id="startNum" value="1" class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none text-sm">
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-2">끝 번호</label>
-                    <input type="number" id="endNum" value="24" 
-                           class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none">
+                    <label class="block text-xs font-bold text-slate-500 mb-1 ml-1 uppercase">끝 번호</label>
+                    <input type="number" id="endNum" value="24" class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none text-sm">
                 </div>
-                <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-2">제외 번호 (쉼표 구분)</label>
-                    <input type="text" id="excludeNums" placeholder="예: 5, 12" 
-                           class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none">
+                <div class="col-span-2 md:col-span-1">
+                    <label class="block text-xs font-bold text-slate-500 mb-1 ml-1 uppercase">제외 번호</label>
+                    <input type="text" id="excludeNums" placeholder="예: 5, 12" class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none text-sm">
                 </div>
             </div>
             
-            <div class="mt-6 flex flex-wrap gap-3">
-                <button onclick="generateClassMatch()" 
-                        class="flex-1 min-w-[200px] bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl transition-all shadow-md active:scale-95 flex items-center justify-center gap-2">
-                    <span>✨</span> 학급 전체 매칭하기
+            <div class="mt-6 flex flex-col sm:flex-row gap-3">
+                <button onclick="generateClassMatch()" class="flex-grow bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl transition-all shadow-md active:scale-[0.98]">
+                    ✨ 매칭하기
                 </button>
-                <button id="saveImageBtn" onclick="saveAsImage()" 
-                        class="hidden bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-md active:scale-95 flex items-center justify-center gap-2">
-                    <span>💾</span> 이미지로 저장하기
-                </button>
-                <button onclick="window.print()" 
-                        class="bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-md active:scale-95 flex items-center justify-center gap-2 no-print">
-                    <span>🖨️</span> 인쇄하기
+                <button id="saveImageBtn" onclick="saveAsImage()" class="hidden bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-md active:scale-[0.98]">
+                    💾 이미지 저장
                 </button>
             </div>
         </div>
 
-        <!-- Result Display Section -->
+        <!-- Result Section -->
         <div id="classResultArea" class="hidden animate-slide-up">
-            <!-- 캡처 대상 영역 -->
             <div id="captureArea">
-                <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 pb-4 border-b border-slate-200">
-                    <h2 id="resultTitle" class="text-3xl font-black flex items-center text-slate-800">
-                        <span class="bg-indigo-100 text-indigo-600 p-2 rounded-lg mr-3">📊</span>
-                        원소 매칭 결과 리스트
+                <div class="flex items-center justify-between mb-6 pb-4 border-b border-slate-200">
+                    <h2 id="resultTitle" class="text-lg md:text-2xl font-black text-slate-800">
+                        원소 매칭 결과
                     </h2>
-                    <p id="totalCountInfo" class="text-slate-500 font-bold mt-2 md:mt-0"></p>
+                    <p id="totalCountInfo" class="text-slate-400 font-bold text-xs md:text-sm"></p>
                 </div>
 
-                <div id="resultGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 mb-10">
-                    <!-- 결과 카드가 여기에 생성됨 -->
+                <!-- 고정 5열 그리드 -->
+                <div id="resultGrid" class="grid grid-cols-5 gap-2 md:gap-4 mb-8">
+                    <!-- Cards here -->
                 </div>
 
-                <!-- Footer in Capture Area -->
-                <div class="mt-10 pt-6 border-t border-slate-100 text-center">
-                    <p class="text-slate-400 font-medium text-sm tracking-tight">created by. 쿙쌤</p>
+                <!-- Image Footer -->
+                <div class="pt-4 border-t border-slate-200 text-center">
+                    <p class="text-[10px] md:text-xs text-slate-400 font-medium tracking-tight">created by. 쿙쌤</p>
                 </div>
-            </div>
-            
-            <div id="emptyMessage" class="hidden text-center py-20 bg-white rounded-3xl border-2 border-dashed border-slate-200">
-                <p class="text-slate-400">조건에 맞는 학생이 없습니다. 번호를 다시 확인해 주세요.</p>
             </div>
         </div>
 
-        <!-- Static Footer for Screen -->
-        <footer class="mt-16 text-center no-print border-t border-slate-200 pt-8">
-            <p class="text-slate-400 font-medium text-sm tracking-tight">created by. 쿙쌤</p>
-        </footer>
+        <!-- Empty State -->
+        <div id="emptyMessage" class="hidden text-center py-20 bg-white rounded-3xl border-2 border-dashed border-slate-200">
+            <p class="text-slate-400">조건에 맞는 학생이 없습니다.</p>
+        </div>
     </div>
+
+    <!-- Static Footer (Main Screen) -->
+    <footer id="mainFooter" class="py-8 text-center no-print">
+        <p class="text-[11px] md:text-xs text-slate-400 font-medium tracking-tight">created by. 쿙쌤</p>
+    </footer>
 
     <script>
         const baseElements = [
@@ -163,63 +147,56 @@
             
             const resultGrid = document.getElementById('resultGrid');
             const classResultArea = document.getElementById('classResultArea');
+            const mainFooter = document.getElementById('mainFooter');
             const emptyMessage = document.getElementById('emptyMessage');
-            const totalCountInfo = document.getElementById('totalCountInfo');
             const saveImageBtn = document.getElementById('saveImageBtn');
             const resultTitle = document.getElementById('resultTitle');
 
-            // Set Title Based on Grade/Class
             if (grade && classGroup) {
-                resultTitle.innerHTML = `<span class="bg-indigo-100 text-indigo-600 p-2 rounded-lg mr-3">📊</span> ${grade}학년 ${classGroup}반 원소 매칭 결과 리스트`;
+                resultTitle.innerText = `${grade}학년 ${classGroup}반 원소 매칭`;
             } else {
-                resultTitle.innerHTML = `<span class="bg-indigo-100 text-indigo-600 p-2 rounded-lg mr-3">📊</span> 원소 매칭 결과 리스트`;
+                resultTitle.innerText = `원소 매칭 결과`;
             }
 
-            const excluded = excludeInput.split(',')
-                .map(n => parseInt(n.trim()))
-                .filter(n => !isNaN(n));
+            const excluded = excludeInput.split(',').map(n => parseInt(n.trim())).filter(n => !isNaN(n));
 
             if (isNaN(startNum) || isNaN(endNum) || startNum > endNum) {
-                alert("번호 범위를 올바르게 설정해 주세요.");
+                alert("번호 범위를 확인해 주세요.");
                 return;
             }
 
             const students = [];
             for (let i = startNum; i <= endNum; i++) {
-                if (!excluded.includes(i)) {
-                    students.push(i);
-                }
+                if (!excluded.includes(i)) students.push(i);
             }
 
             if (students.length === 0) {
                 resultGrid.innerHTML = '';
-                classResultArea.classList.remove('hidden');
+                classResultArea.classList.add('hidden');
                 emptyMessage.classList.remove('hidden');
-                totalCountInfo.innerText = '';
-                saveImageBtn.classList.add('hidden');
+                mainFooter.classList.remove('hidden');
                 return;
             }
 
             emptyMessage.classList.add('hidden');
             classResultArea.classList.remove('hidden');
+            mainFooter.classList.add('hidden'); // 결과 나오면 하단 고정 푸터 숨김
             saveImageBtn.classList.remove('hidden');
             resultGrid.innerHTML = '';
-            totalCountInfo.innerText = `총 ${students.length}명 배정`;
+            document.getElementById('totalCountInfo').innerText = `${students.length}명`;
 
             let elementPool = shuffleArray(baseElements);
             
             students.forEach((studentNum, idx) => {
-                if (idx > 0 && idx % baseElements.length === 0) {
-                    elementPool = shuffleArray(baseElements);
-                }
+                if (idx > 0 && idx % baseElements.length === 0) elementPool = shuffleArray(baseElements);
                 const element = elementPool[idx % baseElements.length];
 
                 const card = document.createElement('div');
-                card.className = 'bg-white p-6 rounded-2xl border border-slate-100 shadow-sm element-grid-item text-center flex flex-col items-center justify-center';
+                card.className = 'bg-white p-2 md:p-4 rounded-xl md:rounded-2xl border border-slate-100 shadow-sm text-center flex flex-col items-center justify-center';
                 card.innerHTML = `
-                    <span class="text-base md:text-lg font-bold text-slate-500 mb-3 bg-slate-50 px-3 py-1 rounded-full border border-slate-100">${studentNum}번 학생</span>
-                    <span class="text-4xl font-black text-indigo-600 mb-1">${element.symbol}</span>
-                    <span class="text-lg font-semibold text-slate-700">${element.name}</span>
+                    <span class="student-label text-[10px] md:text-xs font-bold text-slate-400 mb-1 md:mb-2 bg-slate-50 px-1 md:px-2 py-0.5 rounded-full border border-slate-100">${studentNum}번</span>
+                    <span class="symbol-text text-xl md:text-3xl font-black text-indigo-600 leading-tight">${element.symbol}</span>
+                    <span class="name-text text-[10px] md:text-sm font-semibold text-slate-700">${element.name}</span>
                 `;
                 resultGrid.appendChild(card);
             });
@@ -234,28 +211,22 @@
             const classGroup = document.getElementById('classGroup').value;
             
             const originalText = saveBtn.innerHTML;
-            saveBtn.innerHTML = "<span>⏳</span> 이미지 생성 중...";
+            saveBtn.innerHTML = "⏳ 생성중";
             saveBtn.disabled = true;
 
             html2canvas(captureArea, {
-                scale: 2,
+                scale: 3, // 고해상도
                 backgroundColor: "#f8fafc",
                 useCORS: true
             }).then(canvas => {
                 const link = document.createElement('a');
-                const fileName = (grade && classGroup) 
-                    ? `${grade}학년_${classGroup}반_원소_매칭_결과.png` 
-                    : '학급_원소_매칭_결과.png';
-                
-                link.download = fileName;
+                link.download = (grade && classGroup) ? `${grade}학년_${classGroup}반_원소매칭.png` : '원소매칭.png';
                 link.href = canvas.toDataURL('image/png');
                 link.click();
-                
                 saveBtn.innerHTML = originalText;
                 saveBtn.disabled = false;
-            }).catch(err => {
-                console.error("저장 실패:", err);
-                alert("이미지 저장 중 오류가 발생했습니다.");
+            }).catch(() => {
+                alert("저장 실패");
                 saveBtn.innerHTML = originalText;
                 saveBtn.disabled = false;
             });
