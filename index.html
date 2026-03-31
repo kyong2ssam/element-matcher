@@ -44,11 +44,13 @@
 <body class="bg-slate-50 min-h-screen text-slate-800 flex flex-col">
 
     <div class="flex-grow max-w-6xl mx-auto px-4 py-8 w-full">
+        <!-- Header -->
         <header class="text-center mb-8 no-print">
             <h1 class="text-3xl md:text-4xl font-extrabold text-indigo-600 mb-2">🏫 학급 원소 매칭기</h1>
             <p class="text-slate-500 font-medium text-sm md:text-base">조건을 입력하고 학급 전체 결과를 생성하세요.</p>
         </header>
 
+        <!-- Config Section -->
         <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 mb-8 no-print">
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
                 <div class="col-span-2 md:col-span-1">
@@ -64,7 +66,7 @@
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-500 mb-1 ml-1 uppercase">끝 번호</label>
-                    <input type="number" id="endNum" value="24" class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none text-sm">
+                    <input type="number" id="endNum" value="22" class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none text-sm">
                 </div>
                 <div class="col-span-2 md:col-span-1">
                     <label class="block text-xs font-bold text-slate-500 mb-1 ml-1 uppercase">제외 번호</label>
@@ -82,6 +84,7 @@
             </div>
         </div>
 
+        <!-- Result Section -->
         <div id="classResultArea" class="hidden animate-slide-up">
             <div id="captureArea">
                 <div class="flex items-center justify-between mb-6 pb-4 border-b border-slate-200">
@@ -91,20 +94,25 @@
                     <p id="totalCountInfo" class="text-slate-400 font-bold text-xs md:text-sm"></p>
                 </div>
 
+                <!-- 고정 5열 그리드 -->
                 <div id="resultGrid" class="grid grid-cols-5 gap-2 md:gap-4 mb-8">
-                    </div>
+                    <!-- 결과 카드가 여기에 생성됨 -->
+                </div>
 
+                <!-- Image Footer -->
                 <div class="pt-4 border-t border-slate-200 text-center">
                     <p class="text-[10px] md:text-xs text-slate-400 font-medium tracking-tight">created by. 쿙쌤</p>
                 </div>
             </div>
         </div>
 
+        <!-- Empty State -->
         <div id="emptyMessage" class="hidden text-center py-20 bg-white rounded-3xl border-2 border-dashed border-slate-200">
             <p class="text-slate-400">조건에 맞는 학생이 없습니다.</p>
         </div>
     </div>
 
+    <!-- Static Footer (Main Screen) -->
     <footer id="mainFooter" class="py-8 text-center no-print border-t border-slate-100 mt-auto">
         <p class="text-[11px] md:text-xs text-slate-400 font-medium tracking-tight">created by. 쿙쌤</p>
     </footer>
@@ -116,9 +124,9 @@
             { name: "철", symbol: "Fe" }, { name: "헬륨", symbol: "He" }, { name: "탄소", symbol: "C" },
             { name: "질소", symbol: "N" }, { name: "산소", symbol: "O" }, { name: "플루오린", symbol: "F" },
             { name: "네온", symbol: "Ne" }, { name: "알루미늄", symbol: "Al" }, { name: "규소", symbol: "Si" },
-            { name: "염소", symbol: "Cl" }, { name: "니켈", symbol: "Ni" }, { name: "구리", symbol: "Cu" },
-            { name: "아연", symbol: "Zn" }, { name: "은", symbol: "Ag" }, { name: "아이오딘", symbol: "I" },
-            { name: "금", symbol: "Au" }, { name: "수은", symbol: "Hg" }, { name: "납", symbol: "Pb" }
+            { name: "염소", symbol: "Cl" }, { name: "구리", symbol: "Cu" }, { name: "은", symbol: "Ag" },
+            { name: "아이오딘", symbol: "I" }, { name: "금", symbol: "Au" }, { name: "수은", symbol: "Hg" },
+            { name: "납", symbol: "Pb" }
         ];
 
         function shuffleArray(array) {
