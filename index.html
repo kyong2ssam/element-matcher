@@ -22,7 +22,7 @@
             border-radius: 1.5rem;
         }
 
-        /* 모바일 5열 대응을 위한 미세 조정 */
+        /* 모바일 및 저해상도 환경 대응 */
         @media (max-width: 640px) {
             .student-label { font-size: 0.65rem !important; padding: 0.1rem 0.25rem !important; }
             .symbol-text { font-size: 1.25rem !important; }
@@ -113,7 +113,7 @@
     </div>
 
     <!-- Static Footer (Main Screen) -->
-    <footer id="mainFooter" class="py-8 text-center no-print">
+    <footer id="mainFooter" class="py-8 text-center no-print border-t border-slate-100 mt-auto">
         <p class="text-[11px] md:text-xs text-slate-400 font-medium tracking-tight">created by. 쿙쌤</p>
     </footer>
 
@@ -180,10 +180,10 @@
 
             emptyMessage.classList.add('hidden');
             classResultArea.classList.remove('hidden');
-            mainFooter.classList.add('hidden'); // 결과 나오면 하단 고정 푸터 숨김
+            mainFooter.classList.add('hidden'); 
             saveImageBtn.classList.remove('hidden');
             resultGrid.innerHTML = '';
-            document.getElementById('totalCountInfo').innerText = `${students.length}명`;
+            document.getElementById('totalCountInfo').innerText = `${students.length}명 배정`;
 
             let elementPool = shuffleArray(baseElements);
             
@@ -215,7 +215,7 @@
             saveBtn.disabled = true;
 
             html2canvas(captureArea, {
-                scale: 3, // 고해상도
+                scale: 3, 
                 backgroundColor: "#f8fafc",
                 useCORS: true
             }).then(canvas => {
@@ -226,7 +226,7 @@
                 saveBtn.innerHTML = originalText;
                 saveBtn.disabled = false;
             }).catch(() => {
-                alert("저장 실패");
+                alert("저장 실패. 브라우저 보안 설정을 확인해 주세요.");
                 saveBtn.innerHTML = originalText;
                 saveBtn.disabled = false;
             });
