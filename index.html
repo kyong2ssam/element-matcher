@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>학급 맞춤형 원소 매칭기</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- 라이브러리 로딩 실패 시 알림을 위해 crossorigin 추가 -->
+    <script src="https://cdn.tailwindcss.com" crossorigin></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" crossorigin></script>
     <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Pretendard', sans-serif; -webkit-font-smoothing: antialiased; }
@@ -22,7 +23,7 @@
             border-radius: 1.5rem;
         }
 
-        /* 모바일 및 저해상도 환경 대응 */
+        /* 모바일 대응 */
         @media (max-width: 640px) {
             .student-label { font-size: 0.65rem !important; padding: 0.1rem 0.25rem !important; }
             .symbol-text { font-size: 1.25rem !important; }
@@ -44,6 +45,11 @@
 <body class="bg-slate-50 min-h-screen text-slate-800 flex flex-col">
 
     <div class="flex-grow max-w-6xl mx-auto px-4 py-8 w-full">
+        <!-- 네트워크 오류 알림 (학교망 차단 대비) -->
+        <div id="networkError" class="hidden mb-6 p-4 bg-amber-50 border border-amber-200 text-amber-700 rounded-2xl text-sm no-print">
+            ⚠️ 일부 디자인 라이브러리가 로드되지 않았습니다. 학교 방화벽에서 <b>cdn.tailwindcss.com</b> 접속 허용이 필요할 수 있습니다.
+        </div>
+
         <!-- Header -->
         <header class="text-center mb-8 no-print">
             <h1 class="text-3xl md:text-4xl font-extrabold text-indigo-600 mb-2">🏫 학급 원소 매칭기</h1>
@@ -118,6 +124,13 @@
     </footer>
 
     <script>
+        // 네트워크 상태 체크
+        window.addEventListener('load', () => {
+            if (typeof tailwind === 'undefined') {
+                document.getElementById('networkError').classList.remove('hidden');
+            }
+        });
+
         const baseElements = [
             { name: "수소", symbol: "H" }, { name: "리튬", symbol: "Li" }, { name: "나트륨", symbol: "Na" },
             { name: "마그네슘", symbol: "Mg" }, { name: "칼륨", symbol: "K" }, { name: "칼슘", symbol: "Ca" },
@@ -210,6 +223,11 @@
             const grade = document.getElementById('grade').value;
             const classGroup = document.getElementById('classGroup').value;
             
+            if (typeof html2canvas === 'undefined') {
+                alert("이미지 저장 라이브러리가 로드되지 않았습니다. 방화벽 설정을 확인해 주세요.");
+                return;
+            }
+
             const originalText = saveBtn.innerHTML;
             saveBtn.innerHTML = "⏳ 생성중";
             saveBtn.disabled = true;
